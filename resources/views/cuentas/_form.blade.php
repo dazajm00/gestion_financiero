@@ -19,21 +19,21 @@
 
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div>
-            @if ($tieneMovimientos)
-                <x-input-label for="saldo" value="Saldo actual" />
-                <x-text-input id="saldo" type="text" class="mt-1 block w-full bg-gray-100 text-gray-600"
-                              disabled
-                              :value="'$ '.number_format($cuenta->saldo, 2, ',', '.')" />
-                <p class="mt-2 text-xs text-gray-500">
-                    La cuenta tiene movimientos: el saldo se actualiza automáticamente con las transacciones.
-                </p>
-            @else
-                <x-input-label for="saldo" value="Saldo *" />
-                <x-text-input id="saldo" name="saldo" type="number" step="0.01" min="0" class="mt-1 block w-full"
-                              required
-                              :value="old('saldo', $cuenta->saldo)" />
-                <x-input-error class="mt-2" :messages="$errors->get('saldo')" />
-            @endif
+          @if ($cuenta->exists)
+          {{-- Editar: el saldo no se modifica a mano, solo con las transacciones --}}
+          <x-input-label for="saldo" value="Saldo actual" />
+          <x-text-input id="saldo" type="text" class="mt-1 block w-full bg-gray-100 text-gray-600" disabled
+                      :value="'$ '.number_format((float) $cuenta->saldo, 0, ',', '.')" />
+          <p class="mt-2 text-xs text-gray-500">El saldo se actualiza automáticamente con las transacciones.</p>
+          @else
+          {{-- Nueva cuenta: saldo inicial con máscara de miles --}}
+          <x-input-label for="saldo" value="Saldo inicial *" />
+          <x-text-input id="saldo" name="saldo" type="text" inputmode="numeric" class="mt-1 block w-full"
+                      required placeholder="Ej: 200.000"
+                      :value="filled(old('saldo')) ? number_format((float) old('saldo'), 0, ',', '.') : ''"
+                      oninput="this.value = this.value.replace(/\D/g, '').replace(/^0+(?=\d)/, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')" />
+        <x-input-error class="mt-2" :messages="$errors->get('saldo')" />
+    @endif
         </div>
 
         <div>
