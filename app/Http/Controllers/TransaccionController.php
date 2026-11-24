@@ -170,6 +170,9 @@ class TransaccionController extends Controller
 
     private function validar(Request $request): array
     {
+        // Quita los puntos de miles de la máscara: "150.000" -> "150000"
+        $request->merge(['monto' => str_replace('.', '', (string) $request->input('monto'))]);
+
         $data = $request->validate([
             'cuenta_id' => ['required', 'integer', 'exists:cuentas,id'],
             'categoria_id' => ['required', 'integer', 'exists:categorias,id'],
