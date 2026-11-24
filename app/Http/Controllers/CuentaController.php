@@ -28,15 +28,18 @@ class CuentaController extends Controller
     }
 
     public function store(Request $request): RedirectResponse
-    {
-        $data = $request->validate($this->reglas(conSaldo: true));
-        $data['moneda'] = strtoupper(trim($data['moneda']));
+{
+    // Quita los puntos de miles de la máscara: "200.000" -> "200000"
+    $request->merge(['saldo' => str_replace('.', '', (string) $request->input('saldo'))]);
 
-        $cuenta = Cuenta::create($data);
+    $data = $request->validate($this->reglas(conSaldo: true));
+    $data['moneda'] = strtoupper(trim($data['moneda']));
 
-        return redirect()->route('cuentas.index')
-            ->with('success', "Cuenta «{$cuenta->nombre}» registrada correctamente.");
-    }
+    $cuenta = Cuenta::create($data);
+
+    return redirect()->route('cuentas.index')
+        ->with('success', "Cuenta «{$cuenta->nombre}» registrada correctamente.");
+}
 
     public function edit(Cuenta $cuenta): View
     {
