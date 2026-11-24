@@ -76,9 +76,11 @@
 
     <div>
         <x-input-label for="monto" value="Monto *" />
-        <x-text-input id="monto" name="monto" type="number" step="0.01" min="0.01" class="mt-1 block w-full" required
-                      placeholder="Ej: 150000"
-                      :value="old('monto', $transaccion->monto)" />
+        @php($monto = old('monto', $transaccion->monto))
+        <x-text-input id="monto" name="monto" type="text" inputmode="numeric" class="mt-1 block w-full"
+              required placeholder="Ej: 150.000"
+              :value="$monto !== null && $monto !== '' ? number_format((float) $monto, 0, ',', '.') : ''"
+              oninput="this.value = this.value.replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')" />
         <x-input-error class="mt-2" :messages="$errors->get('monto')" />
     </div>
 
